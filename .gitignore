@@ -1,0 +1,4 @@
+# never publish the plaintext build
+*.zip
+*.exe
+.venv/

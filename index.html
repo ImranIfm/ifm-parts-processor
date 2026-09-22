@@ -199,8 +199,11 @@
 (function () {
   "use strict";
 
-  var PAYLOAD  = "dl/payload.bin";
-  var FILENAME = "IFM_Processor_v9.7.3.zip";
+  var VERSION  = "9.7.3";
+  // The version tag gives each build its own cache entry, so a browser that cached a 404
+  // (or a previous build) before this one was published does not keep replaying it.
+  var PAYLOAD  = "dl/payload.bin?v=" + VERSION;
+  var FILENAME = "IFM_Processor_v" + VERSION + ".zip";
   var ITER     = 600000;
   var SALT_LEN = 16, IV_LEN = 12;
 
@@ -221,7 +224,7 @@
 
   // Stream the payload so a 67 MB fetch reports real progress instead of hanging silently.
   function fetchPayload() {
-    return fetch(PAYLOAD, { cache: "force-cache" }).then(function (res) {
+    return fetch(PAYLOAD).then(function (res) {
       if (!res.ok) throw new Error("payload " + res.status);
       var total = Number(res.headers.get("content-length")) || 0;
       if (!res.body || !total) return res.arrayBuffer();
@@ -309,7 +312,7 @@
         fill.style.width = "0";
         go.disabled = false;
         if (err && /payload/.test(String(err.message))) {
-          say("The build could not be reached. Check your connection and try again.", "err");
+          say("The build could not be reached (" + err.message + "). Reload the page and try again.", "err");
         } else {
           say("That username and password did not unlock the build.", "err");
         }
